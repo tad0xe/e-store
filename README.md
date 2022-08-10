@@ -1,9 +1,9 @@
-"# shopping-cart-backend" 
-"# shopping-cart-backend" 
-"# shopping-cart-backend" 
-"# shopping-cart-backend" 
-"# shopping-cart-backend" 
-"# shopping-cart-backend" 
-"# cart-backend" 
-"# cart-backend" 
-"# cart-backend" 
+install dependencies
+
+```
+npm install
+```
+ start server
+ ```
+ nodemon server
+ ```
