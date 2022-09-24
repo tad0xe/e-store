@@ -1,53 +1,43 @@
-const Product = require("../models/product");
+const Product = require("../models/deal");
 const express = require("express");
 
 const upload = require("../middelwares/upload-photo");
 const router = express.Router();
-router.post("/upload", upload.array("photos", 3), function(req, res, next) {
-  res.send({
-    data: req.files,
-    msg: "Successfully uploaded " + req.files.length + " files!"
-  });
-});
-router.post(`/products`, upload.array("photos" , 10), async (req, res) => {
-  console.log(res);
+
+router.post(`/deals`, upload.single("photo"), async (req, res) => {
+  console.log(res)
   try {
+    
     let product = new Product();
-   // product.photos.push(req.files[10].location);
-  // req.files.forEach(f => product.photos.push(f.location))
-  product.photos.push(...req.files.map(({ location }) => location));
     product.owner = req.body.ownerID;
     product.category = req.body.categoryID;
     product.title = req.body.title;
-    product.type = req.body.type;
-    product.brand = req.body.brand;
-    product.size = req.body.size;
     product.description = req.body.description;
-   // product.photos = req.files[0].location;
+    product.photo = req.file.location;
     product.price = req.body.price;
     product.stockQuantity = req.body.stockQuantity;
+   
 
     await product.save();
-    console.log(Product);
+    console.log(Product)
     res.json({
       status: true,
-      message: "save succes",
-      data: req.files,
-      msg: "Successfully uploaded " + req.files.length + " files!"
+      message: "save succes"
     });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ success: false });
+    console.log(error)
+    res.status(500).json({ success: false, });
   }
 });
 
-router.get(`/products`, async (req, res) => {
+
+router.get(`/deals`, async (req, res) => {
   let filter = {};
-  if (req.query.categories) {
-    filter = { category: req.query.categories.split(",") };
+  if(req.query.categories){
+     filter = {category: req.query.categories.split( ',' )}
   }
   try {
-    let products = await Product.find(filter)
+    let products = await Product.find( filter)
       .populate("owner category")
       .exec();
 
@@ -60,9 +50,9 @@ router.get(`/products`, async (req, res) => {
   }
 });
 
-router.get(`/products/:id`, async (req, res) => {
+router.get(`/deals/:id`, async (req, res) => {
   try {
-    const product = await Product.findOne({ _id: req.params.id })
+    const product = await Product.findOne({ _id: req.params.id})
       .populate("owner category")
       .exec();
     res.json({
@@ -70,26 +60,12 @@ router.get(`/products/:id`, async (req, res) => {
       product: product
     });
   } catch (error) {
-    res.status(500).json({ success: false });
-  }
-});
-router.get(`/products/:title`, async (req, res) => {
-  console.log(res);
-  try {
-    const product = await Product.findOne({ title: req.params.title })
-      .populate("owner category")
-      .exec();
-    res.json({
-      status: true,
-      product: product
-    });
-  } catch (error) {
-    console.error(`/products/${req.params.title}`, error);
     res.status(500).json({ success: false });
   }
 });
 
-router.put(`/products/:id`, async (req, res) => {
+
+router.put(`/deals/:id`, async (req, res) => {
   try {
     const product = await Product.findOneAndUpdate(
       { _id: req.params.id },
@@ -101,10 +77,7 @@ router.put(`/products/:id`, async (req, res) => {
           photo: req.body.photo,
           stockQuantity: req.body.stockQuantity,
           category: req.body.categoryID,
-          owner: req.body.ownerID,
-          type: req.body.type,
-          brand: req.body.brand,
-          size: req.body.size
+          owner: req.body.ownerID
         }
       },
       {
@@ -121,7 +94,7 @@ router.put(`/products/:id`, async (req, res) => {
   }
 });
 
-router.delete(`/products/:id`, async (req, res) => {
+router.delete(`/deals/:id`, async (req, res) => {
   try {
     let deletedProduct = await Product.findByIdAndDelete({
       _id: req.params.id
