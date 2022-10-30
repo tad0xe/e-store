@@ -1,7 +1,11 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-const cors = require("cors");
+const cors = require('cors');
+const corsConfig = {
+  origin: true,
+  credentials: true,
+};
 const morgan = require("morgan");
 const dotenv = require("dotenv");
 const Stripe = require("stripe");
@@ -25,7 +29,8 @@ const orderRoutes = require("./routes/order");
 
 app.use(morgan("combined"));
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors(corsConfig));
+app.options('*', cors(corsConfig));
 app.use("/api", productsRoutes);
 app.use("/api", dealsRoutes);
 app.use("/api", addressRoutes);
@@ -47,9 +52,9 @@ mongoose
     console.log(`Listening on ${ PORT }`);
   })
   .catch(err => console.log(err));
+/*
 
-
-/*mongoose
+mongoose
   .connect(process.env.DATABASE, {
     useUnifiedTopology: true,
     useNewUrlParser: true,
